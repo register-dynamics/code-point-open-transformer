@@ -87,7 +87,7 @@ def format_postcode(postcode):
   return '{} {}'.format(outward, inward)
 
 def format_geometry(eastings, northings):
-  return 'POINT ({} {})'.format(eastings, northings)
+  return '{} {}'.format(eastings, northings)
 
 if __name__ == '__main__':
   main()
