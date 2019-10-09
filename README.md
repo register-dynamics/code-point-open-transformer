@@ -4,18 +4,19 @@
 easier to use by denormalising it, concatenating the files, adding headers, and
 standardising some of the formatting.
 
+## Installation
+Ensure you have Python 3.7+ installed on your machine.
+
+```
+pip3 install --user "git+https://github.com/timwis/code-point-open-transformer#egg=code-point-open-transformer"
+```
+
 ## Usage
-With Python 3 and [Pipenv][pipenv] installed:
+```
+Usage: codepointopen [OPTIONS] PACKAGE_DIR OUTPUT_DIR
 
-1. Clone this repository and run `pipenv install` within it.
-2. Download the [Code-Point Open][cpo] dataset and unzip it.
-3. Activate a local environment using `pipenv shell`.
-4. Run the script using `python bin/cli.py /path/to/unzipped_data/ /path/to/output_dir/`
-
-The script will write a `.csv` file for every set of regions included in the code-point
-open "code list" files. It will also merge all the data files, converting linked values
-to [CURIE][curie] format. Finally, it modifies the `Postcode` column to format it with a
-single space
+  Improve usability of Code-Point Open data and link to lookup files
+```
 
 This script does the following:
 
