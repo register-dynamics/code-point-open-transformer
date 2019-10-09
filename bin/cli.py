@@ -1,16 +1,21 @@
 from os import listdir
 from os.path import join, isfile
-from sys import stdout
+import re
+from collections import OrderedDict
 import csv
 
 import click
-from openpyxl import load_workbook
+import openpyxl
+import xlrd
 from tqdm import tqdm # progress bar
 
-HEADERS_PATH = 'Doc/Code-Point_Open_Column_Headers.csv'
-CODES_PATH = 'Doc/Codelist.xlsx'
-DATA_PATH = 'Data/CSV'
-COUNTRIES = {
+DATA_HEADERS_PATH = 'Doc/Code-Point_Open_Column_Headers.csv'
+REGIONS_PATH = 'Doc/Codelist.xlsx'
+NHS_REGIONS_FULL_PATH = 'Doc/NHS_Codelist.xls'
+DATA_DIR_PATH = 'Data/CSV'
+MERGED_DATA_FILE_NAME = 'code-point-open.csv'
+COUNTRY_CODES_REGISTER_NAME = 'uk-country'
+COUNTRY_CODES = {
   'E92000001': 'England',
   'S92000003': 'Scotland',
   'W92000004': 'Wales',
@@ -20,66 +25,99 @@ COUNTRIES = {
 @click.command()
 @click.argument('package_dir', type=click.Path(exists=True,
                 dir_okay=True, file_okay=False))
-def main(package_dir):
-  """Denormalise and improve usability of Code-Point Open data"""
+@click.argument('output_dir', type=click.Path(exists=True,
+                dir_okay=True, file_okay=False))
+def main(package_dir, output_dir):
+  """Improve usability of Code-Point Open data and link to lookup files"""
 
-  headers = load_headers(join(package_dir, HEADERS_PATH))
-  codes = load_codes(join(package_dir, CODES_PATH))
+  regions_full_path = join(package_dir, REGIONS_PATH)
 
-  new_headers = headers + ('Country', 'County', 'District', 'Ward', 'Geometry')
-  writer = csv.DictWriter(stdout, fieldnames=new_headers)
-  writer.writeheader()
+  # Parse table of contents from regions workbook
+  regions_workbook = openpyxl.load_workbook(regions_full_path)
+  regions_workbook_toc = {row[0]: slugify(row[1])
+                          for row in regions_workbook['AREA_CODES'].values}
 
-  data_dir = join(package_dir, DATA_PATH)
-  data_files = [f for f in listdir(data_dir) if isfile(join(data_dir, f))]
+  # For each region sheet, write a register-ready CSV file
+  # and build a map of region codes to sheet slugs for curies.
+  region_to_sheet = {}
+  for sheet_code, sheet_slug in regions_workbook_toc.items():
+    header = [sheet_slug, 'name']
+    sheet_file_path = join(output_dir, sheet_slug + '.csv')
+    tqdm.write('Writing region file: ' + sheet_file_path)
 
-  for data_file in tqdm(data_files):
-    with open(join(data_dir, data_file), newline='') as data_file:
-      reader = csv.reader(data_file)
-      for row in reader:
-        data = dict(zip(headers, row))
-        new_data = {
-          **data,
-          'Postcode': format_postcode(data['Postcode']),
-          'Country': codes['countries'].get(data['Country_code']),
-          'County': codes['counties'].get(data['Admin_county_code']),
-          'District': codes['districts'].get(data['Admin_district_code']),
-          'Ward': codes['wards'].get(data['Admin_ward_code']),
-          'Geometry': format_geometry(data['Eastings'], data['Northings']),
-        }
-        writer.writerow(new_data)
+    with open(sheet_file_path, 'w', newline='') as sheet_file:
+      region_writer = csv.writer(sheet_file)
+      region_writer.writerow(header)
 
-def load_headers(headers_path):
-  with open(headers_path, newline='') as headers_file:
-    data = list(csv.reader(headers_file))
-    return tuple(data[1])
+      for region_name, region_code in regions_workbook[sheet_code].values:
+        region_writer.writerow([region_code, region_name])
+        region_to_sheet[region_code] = sheet_slug
 
-def load_codes(codes_path):
-  codes = {'counties': {}}
-  workbook = load_workbook(codes_path)
+  # Do the same for NHS region workbook, using older library
+  nhs_regions_full_path = join(package_dir, NHS_REGIONS_FULL_PATH)
+  nhs_regions_workbook = xlrd.open_workbook(nhs_regions_full_path)
+  for sheet in nhs_regions_workbook.sheets():
+    sheet_slug = slugify(sheet.name)
+    header = [sheet_slug, 'name']
+    sheet_file_path = join(output_dir, sheet_slug + '.csv')
+    tqdm.write('Writing NHS region file: ' + sheet_file_path)
 
-  codes = {
-    'countries': COUNTRIES,
-    'counties': get_dict_from_sheet(workbook['CTY']),
-    'districts': {
-      **get_dict_from_sheet(workbook['DIS']),
-      **get_dict_from_sheet(workbook['LBO']),
-    },
-    'wards': {
-      **get_dict_from_sheet(workbook['DIW']),
-      **get_dict_from_sheet(workbook['LBW']),
-    },
-  }
+    with open(sheet_file_path, 'w', newline='') as sheet_file:
+      region_writer = csv.writer(sheet_file)
+      region_writer.writerow(header)
 
-  return codes
+      for region_code, region_name in sheet.get_rows():
+        region_writer.writerow([region_code.value, region_name.value])
+        region_to_sheet[region_code.value] = sheet_slug
 
-def get_dict_from_sheet(sheet):
-  data = dict()
+  # Write country codes to a register-ready CSV and append to code map
+  country_codes_full_path = join(output_dir, COUNTRY_CODES_REGISTER_NAME + '.csv')
+  with open(country_codes_full_path, 'w', newline='') as country_codes_file:
+    country_codes_writer = csv.writer(country_codes_file)
+    country_codes_writer.writerow([COUNTRY_CODES_REGISTER_NAME, 'name'])
 
-  for (value, key) in sheet.iter_rows(min_row=1, max_col=2, values_only=True):
-    data[key] = value
+    for country_code, country_name in COUNTRY_CODES.items():
+      country_codes_writer.writerow([country_code, country_name])
+      region_to_sheet[country_code] = COUNTRY_CODES_REGISTER_NAME
 
-  return data
+  # Load headers to prepend to data from headers file
+  headers = tuple()
+  data_headers_full_path = join(package_dir, DATA_HEADERS_PATH)
+  with open(data_headers_full_path, newline='') as data_headers_file:
+    raw_headers = list(csv.reader(data_headers_file))[1]
+    headers = [slugify(header) for header in raw_headers]
+    headers.append('geometry')
+
+  # For each data file
+  data_dir_full_path = join(package_dir, DATA_DIR_PATH)
+  data_file_paths = [join(data_dir_full_path, filename)
+                     for filename in listdir(data_dir_full_path)
+                     if isfile(join(data_dir_full_path, filename))]
+
+  merged_data_full_path = join(output_dir, MERGED_DATA_FILE_NAME)
+  with open(merged_data_full_path, 'w', newline='') as merged_data_file:
+    merged_data_writer = csv.DictWriter(merged_data_file, fieldnames=headers)
+    merged_data_writer.writeheader()
+
+    for data_file_path in tqdm(data_file_paths):
+      tqdm.write('Processing data file: ' + data_file_path)
+      with open(data_file_path, newline='') as data_file:
+        data_reader = csv.DictReader(data_file, fieldnames=headers)
+        for row in data_reader:
+          new_row = {}
+          for key, value in row.items():
+            if key.endswith('_code') and value in region_to_sheet:
+              new_row[key] = region_to_sheet[value] + ':' + value
+            else:
+              new_row[key] = value
+            
+          new_row['postcode'] = format_postcode(new_row['postcode'])
+          new_row['geometry'] = format_geometry(new_row['eastings'], new_row['northings'])
+
+          merged_data_writer.writerow(new_row)
+
+def slugify(input):
+  return input.replace(' ', '-').lower()
 
 def format_postcode(postcode):
   outward = postcode[:-3].strip()

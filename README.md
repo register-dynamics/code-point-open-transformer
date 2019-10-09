@@ -9,13 +9,22 @@ With Python 3 and [Pipenv][pipenv] installed:
 
 1. Clone this repository and run `pipenv install` within it.
 2. Download the [Code-Point Open][cpo] dataset and unzip it.
-3. Run the script using `python bin/cli.py /path/to/unzipped_directory/ > output.csv`
+3. Activate a local environment using `pipenv shell`.
+4. Run the script using `python bin/cli.py /path/to/unzipped_data/ /path/to/output_dir/`
 
-The script adds columns for lookup fields and a WKT-formatted version of the coordinates.
-The only column it modifies is `Postcode`, formatting it with a single space between the
-outward and inward parts. To remove some of the columns after processing, use a tool like
-csvcut from [csvkit][csvkit].
+The script will write a `.csv` file for every set of regions included in the code-point
+open "code list" files. It will also merge all the data files, converting linked values
+to [CURIE][curie] format. Finally, it modifies the `Postcode` column to format it with a
+single space
+
+This script does the following:
+
+- For each set of regions in the "code list" files, outputs a `.csv` file to create a register from
+- Merges all the data files into `code-point-open.csv`
+- Converts all the linked values in the data files to [CURIE][curie] format
+- Formats the `postcode` column with a single space between outward and inward parts
+- Adds a `geometry` column that is a space-separated combination of `eastings` and `northings`
 
 [cpo]: https://www.ordnancesurvey.co.uk/business-government/products/code-point-open
 [pipenv]: https://pipenv.readthedocs.io/en/latest/
-[csvkit]: https://pipenv.readthedocs.io/en/latest/
+[curie]: https://spec.openregister.org/v2/datatypes/curie
