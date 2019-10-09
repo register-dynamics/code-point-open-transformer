@@ -7,6 +7,7 @@ import csv
 import click
 import openpyxl
 import xlrd
+from tqdm import tqdm # progress bar
 
 DATA_HEADERS_PATH = 'Doc/Code-Point_Open_Column_Headers.csv'
 REGIONS_PATH = 'Doc/Codelist.xlsx'
@@ -42,7 +43,7 @@ def main(package_dir, output_dir):
   for sheet_code, sheet_slug in regions_workbook_toc.items():
     header = [sheet_slug, 'name']
     sheet_file_path = join(output_dir, sheet_slug + '.csv')
-    click.echo('Writing region file: ' + sheet_file_path)
+    tqdm.write('Writing region file: ' + sheet_file_path)
 
     with open(sheet_file_path, 'w', newline='') as sheet_file:
       region_writer = csv.writer(sheet_file)
@@ -59,7 +60,7 @@ def main(package_dir, output_dir):
     sheet_slug = slugify(sheet.name)
     header = [sheet_slug, 'name']
     sheet_file_path = join(output_dir, sheet_slug + '.csv')
-    click.echo('Writing NHS region file: ' + sheet_file_path)
+    tqdm.write('Writing NHS region file: ' + sheet_file_path)
 
     with open(sheet_file_path, 'w', newline='') as sheet_file:
       region_writer = csv.writer(sheet_file)
@@ -98,8 +99,8 @@ def main(package_dir, output_dir):
     merged_data_writer = csv.DictWriter(merged_data_file, fieldnames=headers)
     merged_data_writer.writeheader()
 
-    for data_file_path in data_file_paths:
-      click.echo('Processing data file: ' + data_file_path)
+    for data_file_path in tqdm(data_file_paths):
+      tqdm.write('Processing data file: ' + data_file_path)
       with open(data_file_path, newline='') as data_file:
         data_reader = csv.DictReader(data_file, fieldnames=headers)
         for row in data_reader:
