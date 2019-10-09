@@ -8,7 +8,7 @@ standardising some of the formatting.
 Ensure you have Python 3.7+ installed on your machine.
 
 ```
-pip3 install --user "git+https://github.com/timwis/code-point-open-transformer#egg=code-point-open-transformer"
+pip3 install "git+https://github.com/timwis/code-point-open-transformer#egg=code-point-open-transformer"
 ```
 
 ## Usage
