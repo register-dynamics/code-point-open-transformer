@@ -17,7 +17,8 @@
     ],
     "register": "code-point-open",
     "registry": "ordnance-survey",
-    "text": "Code-Point Open is a dataset that contains postcode units, each of which have a precise geographical location. There are approximately 1.7 million postcode units in England, Scotland and Wales. Each postcode unit, such as KY12 8UP or PO14 2RS, contains an average of fifteen adjoining addresses. Northern Ireland postcodes are not available with Code-Point Open."
+    "text": "Code-Point Open is a dataset that contains postcode units, each of which have a precise geographical location. There are approximately 1.7 million postcode units in England, Scotland and Wales. Each postcode unit, such as KY12 8UP or PO14 2RS, contains an average of fifteen adjoining addresses. Northern Ireland postcodes are not available with Code-Point Open. Contains OS data © Crown copyright and database right 2019. Contains Royal Mail data © Royal Mail copyright and Database right 2019. Contains National Statistics data © Crown copyright and database 2019.",
+    "licence": "ORDNANCE SURVEY DATA LICENCE. Your use of data is subject to terms at www.ordnancesurvey.co.uk/opendata/licence. Contains Ordnance Survey data © Crown copyright and database right 2019. Contains Royal Mail data © Royal Mail copyright and database right 2019. Contains National Statistics data © Crown copyright and database right 2019."
   },
   "field:postcode": {
     "cardinality": "1",

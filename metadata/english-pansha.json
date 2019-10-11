@@ -1,0 +1,26 @@
+{
+  "name": {"name": "english-pansha"},
+  "custodian": {"custodian": "Ordnance Survey <customerservices@os.uk>"},
+  "register:english-pansha": {
+    "fields": [
+      "code",
+      "name"
+    ],
+    "register": "english-pansha",
+    "registry": "ordnance-survey",
+    "text": "Contains OS data © Crown copyright and database right 2019. Contains Royal Mail data © Royal Mail copyright and Database right 2019. Contains National Statistics data © Crown copyright and database 2019.",
+    "licence": "ORDNANCE SURVEY DATA LICENCE. Your use of data is subject to terms at www.ordnancesurvey.co.uk/opendata/licence. Contains Ordnance Survey data © Crown copyright and database right 2019. Contains Royal Mail data © Royal Mail copyright and database right 2019. Contains National Statistics data © Crown copyright and database right 2019."
+  },
+  "field:code": {
+    "cardinality": "1",
+    "datatype": "string",
+    "field": "code",
+    "text": "Code used by ONS to identify the region"
+  },
+  "field:name": {
+    "cardinality": "1",
+    "datatype": "string",
+    "field": "name",
+    "text": "Name of the region"
+  }
+}
