@@ -3,114 +3,86 @@
   "custodian": {"custodian": "Ordnance Survey <customerservices@os.uk>"},
   "register:code-point-open": {
     "fields": [
-      "Postcode",
-      "Positional_quality_indicator",
-      "Eastings",
-      "Northings",
-      "Country_code",
-      "NHS_regional_HA_code",
-      "NHS_HA_code",
-      "Admin_county_code",
-      "Admin_district_code",
-      "Admin_ward_code",
-      "Country",
-      "County",
-      "District",
-      "Ward",
-      "Geometry"
+      "postcode",
+      "positional_quality_indicator",
+      "eastings",
+      "northings",
+      "country_code",
+      "nhs_regional_ha_code",
+      "nhs_ha_code",
+      "admin_county_code",
+      "admin_district_code",
+      "admin_ward_code",
+      "geometry"
     ],
     "register": "code-point-open",
-    "registry": "register-dynamics",
+    "registry": "ordnance-survey",
     "text": "Code-Point Open is a dataset that contains postcode units, each of which have a precise geographical location. There are approximately 1.7 million postcode units in England, Scotland and Wales. Each postcode unit, such as KY12 8UP or PO14 2RS, contains an average of fifteen adjoining addresses. Northern Ireland postcodes are not available with Code-Point Open."
   },
-  "field:Postcode": {
+  "field:postcode": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Postcode",
+    "field": "postcode",
     "text": "Contains elements for postal area, district, sector and unit."
   },
-  "field:Positional_quality_indicator": {
+  "field:positional_quality_indicator": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Positional_quality_indicator",
+    "field": "positional_quality_indicator",
     "text": "Indicates the source of the data indicator used and, hence, the quality of the coordinates provided for each record. It is determined by the best available data in PALF."
   },
-  "field:Eastings": {
+  "field:eastings": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Eastings",
+    "field": "eastings",
     "text": "Distance in metres east of National Grid origin."
   },
-  "field:Northings": {
+  "field:northings": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Northings",
+    "field": "northings",
     "text": "Distance in metres north of National Grid origin."
   },
-  "field:Country_code": {
+  "field:country_code": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Country_code",
+    "field": "country_code",
     "text": "Code used by ONS to identify the country in which the Code-Point Open georeference lies."
   },
-  "field:NHS_regional_HA_code": {
+  "field:nhs_regional_ha_code": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "NHS_regional_HA_code",
+    "field": "nhs_regional_ha_code",
     "text": "English PanStrategic Health Authority in which CPLC falls."
   },
-  "field:NHS_HA_code": {
+  "field:nha_ha_code": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "NHS_HA_code",
+    "field": "nhs_ha_code",
     "text": "English Strategic Health Authority or Scottish Health Board in which CPLC falls."
   },
-  "field:Admin_county_code": {
+  "field:admin_county_code": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Admin_county_code",
+    "field": "admin_county_code",
     "text": "County in which CPLC falls."
   },
-  "field:Admin_district_code": {
+  "field:admin_district_code": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Admin_district_code",
+    "field": "admin_district_code",
     "text": "Unitary Authority, Metropolitan and Non-Metropolitan District, London Borough or Scottish Council Area in which CPLC falls."
   },
-  "field:Admin_ward_code": {
+  "field:admin_ward_code": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Admin_ward_code",
+    "field": "admin_ward_code",
     "text": "Electoral Ward or Division in which CPLC falls."
   },
-  "field:Country": {
+  "field:geometry": {
     "cardinality": "1",
     "datatype": "string",
-    "field": "Country",
-    "text": "Lookup-value of Country_code"
-  },
-  "field:County": {
-    "cardinality": "1",
-    "datatype": "string",
-    "field": "County",
-    "text": "Lookup-value of Admin_county_code"
-  },
-  "field:District": {
-    "cardinality": "1",
-    "datatype": "string",
-    "field": "District",
-    "text": "Lookup-value of Admin_district_code"
-  },
-  "field:Ward": {
-    "cardinality": "1",
-    "datatype": "string",
-    "field": "Ward",
-    "text": "Lookup-value of Admin_ward_code"
-  },
-  "field:Geometry": {
-    "cardinality": "1",
-    "datatype": "string",
-    "field": "Geometry",
+    "field": "geometry",
     "text": "Concatenation of Eastings and Northings"
   }
 }
